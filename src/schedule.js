@@ -141,8 +141,24 @@ function reconcileChildren(currentFiber, newChildren) {
 }
 
 // 完成任务的时候收集副作用的fiber, 组成effect list
-function completeUnitOfWork() {
-    
+function completeUnitOfWork(currentFiber) {
+    // 第一个完成的是A1(TEXT)
+    let returnFiber = currentFiber.return
+    if(returnFiber) {
+        const effectTag = currentFiber.effectTag
+        // 自己有副作用
+        // 每一个fiber有两个属性
+        // firstFiber指向一个有副作用的子Fiber
+        // lastFiber指向最后一个有副作用的子Fiber
+        // 中间的用nextEffect做成一个单链表
+        if(effectTag) {
+            returnFiber.firstEffect = currentFiber
+            returnFiber.lastEffect = currentFiber
+            if(returnFiber.lastEffect) {
+                returnFiber.lastEffect.nextEffect = currentFiber
+            }
+        }
+    }
 }
 
 // 告诉浏览器, 我现在有任务请在你空闲的时候, 执行workLoop
