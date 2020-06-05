@@ -62,8 +62,6 @@ function commitWork(currentFiber) {
     let returnFiber = currentFiber.return
     let returnDOM = returnFiber.stateNode
     if(currentFiber.effectTag === PLACEMENT) {
-        console.log(returnDOM)
-        console.log(currentFiber)
         returnDOM.appendChild(currentFiber.stateNode)
     }
     currentFiber.effectTag = null

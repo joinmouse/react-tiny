@@ -9,7 +9,6 @@ export function setProps(dom, oldProps, newProps) {
 
 function setProp(dom, key, value) {
     // 事件
-    console.log(key)
     if(/^on/.test(key)) {
         dom[key.toLowerCase] = value
     }else if(key === 'style') {
