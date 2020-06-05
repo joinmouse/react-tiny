@@ -142,9 +142,22 @@ function reconcileChildren(currentFiber, newChildren) {
 
 // 完成任务的时候收集副作用的fiber, 组成effect list
 function completeUnitOfWork(currentFiber) {
-    // 第一个完成的是A1(TEXT)
+    // 第一个完成的是A1(text)
     let returnFiber = currentFiber.return
     if(returnFiber) {
+        // 把自己儿子的effect链挂到父亲身上
+        if(!returnFiber.firstEffect) {
+            returnFiber.firstEffect = currentFiber.firstEffect
+        }
+        if(currentFiber.lastEffect) {
+            if(returnFiber.lastEffect) {
+                returnFiber.lastEffect.nextEffect = currentFiber.firstEffect
+            }else {
+                returnFiber.lastEffect = currentFiber.lastEffect
+            }
+        }
+
+        // 把自己effect链挂到父亲身上
         const effectTag = currentFiber.effectTag
         // 自己有副作用
         // 每一个fiber有两个属性
@@ -152,11 +165,12 @@ function completeUnitOfWork(currentFiber) {
         // lastFiber指向最后一个有副作用的子Fiber
         // 中间的用nextEffect做成一个单链表
         if(effectTag) {
-            returnFiber.firstEffect = currentFiber
-            returnFiber.lastEffect = currentFiber
             if(returnFiber.lastEffect) {
                 returnFiber.lastEffect.nextEffect = currentFiber
+            }else {
+                returnFiber.firstEffect = currentFiber
             }
+            returnFiber.lastEffect = currentFiber
         }
     }
 }
