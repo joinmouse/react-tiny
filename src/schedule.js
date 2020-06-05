@@ -42,7 +42,7 @@ function workLoop(deadline) {
     if(nextUnitOfWork) {
         requestIdleCallback(workLoop, {timeout: 500})
     }else {
-        console.log('render over!')
+        console.log('render阶段结束, 开始commit!')
         // 提交阶段
         commitRoot()
     }
