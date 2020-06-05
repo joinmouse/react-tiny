@@ -1,4 +1,4 @@
-## 实现一个mini版本的react & hooks
+## 实现一个mini版本的react Fiber架构 & hooks
 
 ### 1、实现虚拟DOM
 
