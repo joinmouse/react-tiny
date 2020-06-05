@@ -43,10 +43,35 @@ function workLoop(deadline) {
         requestIdleCallback(workLoop, {timeout: 500})
     }else {
         console.log('render over!')
+        // 提交阶段
+        commitRoot()
     }
 }
+// commit 阶段
+function commitRoot() {
+    let currentFiber = workInProgressRoot.firstEffect
+    while(currentFiber) {
+        commitWork(currentFiber)
+        currentFiber = currentFiber.nextEffect
+    }
+    workInProgressRoot = null
+}
+// Dom同步批量挂载
+function commitWork(currentFiber) {
+    if(!currentFiber) return
+    let returnFiber = currentFiber.return
+    let returnDOM = returnFiber.stateNode
+    if(currentFiber.effectTag === PLACEMENT) {
+        console.log(returnDOM)
+        console.log(currentFiber)
+        returnDOM.appendChild(currentFiber.stateNode)
+    }
+    currentFiber.effectTag = null
+}
+
 // 执行任务
 function performUnitOfWork(currentFiber) {
+    // debugger
     beginWork(currentFiber)
     if(currentFiber.child) {
         return currentFiber.child
@@ -81,7 +106,7 @@ function updateHostText(currentFiber) {
         currentFiber.stateNode = createDOM(currentFiber)
     }
 }
-function updateHost() {
+function updateHost(currentFiber) {
     if(!currentFiber.stateNode) {
         currentFiber.stateNode = createDOM(currentFiber)
     }
@@ -111,9 +136,9 @@ function reconcileChildren(currentFiber, newChildren) {
     while(newChildrenIndex < newChildren.length) {
         let newChild = newChildren[newChildrenIndex]
         let tag
-        if(newChild.type == ELEMENT_TEXT) {
+        if(newChild.type === ELEMENT_TEXT) {
             tag = TAG_TEXT
-        }else if(typeof newChild === 'string') {
+        }else if(typeof newChild.type === 'string') {
             // 若type是字符串，那么这是一个原生DOM节点
             tag = TAG_HOST
         }
@@ -128,7 +153,7 @@ function reconcileChildren(currentFiber, newChildren) {
         }
         if(newFiber) {
             // 当前索引为0, 则是第一个儿子
-            if(newChildrenIndex == 0) {
+            if(newChildrenIndex === 0) {
                 currentFiber.child = newFiber
             }else {
                 // 儿子的下一个弟弟
@@ -152,9 +177,8 @@ function completeUnitOfWork(currentFiber) {
         if(currentFiber.lastEffect) {
             if(returnFiber.lastEffect) {
                 returnFiber.lastEffect.nextEffect = currentFiber.firstEffect
-            }else {
-                returnFiber.lastEffect = currentFiber.lastEffect
             }
+            returnFiber.lastEffect = currentFiber.lastEffect
         }
 
         // 把自己effect链挂到父亲身上
