@@ -1,40 +1,20 @@
-import React from './react';
-import ReactDOM from './react-dom';
-
-// babel转义
-// React.createElement(type, props, ...children)
-// 虚拟DOM就是一个JS对象, 以对象的方式描述界面上的DOM
-// var element = React.createElement("div", {
-//         id: "A1"
-//     }, React.createElement("p", {
-//         id: "B1"
-//     }, React.createElement("span", {
-//         id: "C1"
-//     }, "111"), React.createElement("span", {
-//         id: "C2"
-//     }, "222")), React.createElement("p", {
-//         id: "B2"
-// }))
-
-let style = {
-    border: '2px solid red',
-    margin: '20px'
+const element = {
+    type: "h1",
+    props: {
+        title: "foo",
+        children: "hello"
+    }
 }
 
-let element = (
-    <div id='A1' style={style}>
-        A1
-        <div id='B1' style={style}>
-            B1
-            <div id='C1' style={style}>C1</div>
-            <div id='C2' style={style}>C2</div>
-        </div>
-        <div id='B2' style={style}>B2</div>
-    </div>
-)
-// console.log(element)
+// 容器
+const container = document.getElementById("root")
 
-ReactDOM.render(
-    element,
-    document.getElementById('root')
-)
+// 内容节点
+const node = document.createElement(element.type)
+node["title"] = element.props.title
+
+const text = document.createTextNode("")
+text["nodeValue"] = element.props.children
+
+node.appendChild(text)
+container.appendChild(node)
